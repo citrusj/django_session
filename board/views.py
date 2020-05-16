@@ -31,6 +31,7 @@ def detail(request, pk):
         if comment_form.is_valid():
             comment = comment_form.save(commit=False) 
             comment.published_date = timezone.now() 
+            comment.author = request.user #추가
             comment.post = post
             comment.save()
             return redirect('detail', pk=pk)
