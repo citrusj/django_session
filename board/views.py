@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
-from .models import Content, Comment
+from .models import Content, Comment, Tag
 from django.utils import timezone
-from .forms import ContentForm, CommentForm
+from .forms import ContentForm, CommentForm, TagForm
 from django.shortcuts import get_object_or_404
 
 # Create your views here.
@@ -12,16 +12,21 @@ def home(request):
 def new(request):
     if request.method == 'POST':
         form = ContentForm(request.POST, request.FILES)
+        tag_form = TagForm(request.POST, request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
             post.published_date = timezone.now()
             post.save()
+            if tag_form.is_valid():
+                tag = tag_form.save()
+                post.tag_set.add(tag)
             return redirect('home')
     else:
         form = ContentForm()
+        tag_form = TagForm()
 
-    return render(request, 'board/new.html', {'form': form})
+    return render(request, 'board/new.html', {'form': form, 'tag_form':tag_form})
 
 def detail(request, pk):
     post = get_object_or_404(Content, pk=pk)
@@ -45,14 +50,19 @@ def edit(request, pk):
     post = get_object_or_404(Content, pk=pk)
     if request.method == "POST":
         form = ContentForm(request.POST, instance=post)
+        tag_form = TagForm(request.POST, instance=tag)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
             post.published_date = timezone.now
             post.save()
+            if tag_form.is_valid():
+                tag = tag_form.save()
+                post.tag_set.add(tag)
             return redirect('detail', pk=post.pk)
     else:
         form = ContentForm(instance=post)
+        tag_form = TagForm(instance=post.tag_set)
     return render(request, 'board/edit.html', {'form': form})
 
 def delete(request, pk):

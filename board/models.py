@@ -8,9 +8,14 @@ class Content(models.Model):
     pub_date = models.DateTimeField(default=timezone.now)
     body = models.TextField(default='')
     author = models.CharField(max_length=30, null=True, blank=True)
+    tag_set = models.ManyToManyField('Tag', blank=True)
 
 class Comment(models.Model):
     post = models.ForeignKey('Content', on_delete=models.CASCADE)
     text = models.TextField(default='')
     created_date = models.DateTimeField(default=timezone.now)
     author = models.CharField(max_length=30, null=True, blank=True)
+
+class Tag(models.Model):
+    name = models.CharField(max_length=10)
+
