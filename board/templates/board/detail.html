@@ -13,7 +13,11 @@
         {%endfor%}
     </p>
 </div>
-
+<form action="{% url 'tag_add' pk=post.pk %}" method="POST">
+    {% csrf_token %}
+    {{tag_form.name}}
+    <input type="submit" value="Add Tag">
+</form>
 <br>
 <a href="{% url 'edit' pk=post.pk %}">수정하기</a>
 <a href="{% url 'delete' pk=post.pk %}">삭제하기</a><br><br>

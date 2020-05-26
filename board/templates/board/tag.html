@@ -1,0 +1,5 @@
+{% for tag in tags %}
+    <a href="{% url 'tag_detail' pk=tag.pk %}">{{ tag.name }}</a>
+    <br>
+    <hr>
+{% endfor %}

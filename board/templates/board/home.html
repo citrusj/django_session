@@ -12,7 +12,7 @@
 {% endif %}
 
 <hr>
-
+<a href="{% url 'tag_home' %}">해시태그 모아보기</a>
 <br><br>
 {% for post in posts %}
     <a href="{% url 'detail' pk=post.pk %}">{{ post.title }}</a>

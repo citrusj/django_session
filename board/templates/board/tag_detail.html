@@ -1,0 +1,8 @@
+<div class="posts">
+    {% for post in tag_posts %}
+    <a href="{% url 'detail' pk=post.pk %}">{{ post.title }}</a>
+    <br>
+    <hr>
+    {% endfor %}
+
+</div>

@@ -12,21 +12,16 @@ def home(request):
 def new(request):
     if request.method == 'POST':
         form = ContentForm(request.POST, request.FILES)
-        tag_form = TagForm(request.POST, request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
             post.published_date = timezone.now()
             post.save()
-            if tag_form.is_valid():
-                tag = tag_form.save()
-                post.tag_set.add(tag)
             return redirect('home')
     else:
         form = ContentForm()
-        tag_form = TagForm()
 
-    return render(request, 'board/new.html', {'form': form, 'tag_form':tag_form})
+    return render(request, 'board/new.html', {'form': form})
 
 def detail(request, pk):
     post = get_object_or_404(Content, pk=pk)
@@ -42,27 +37,22 @@ def detail(request, pk):
             return redirect('detail', pk=pk)
     else:
         comment_form = CommentForm()
+        tag_form = TagForm()
 
     return render(request, 'board/detail.html', {'post': post, 
-    'comments':comments, 'comment_form':comment_form})
+    'comments':comments, 'comment_form':comment_form, 'tag_form':tag_form})
 
 def edit(request, pk):
     post = get_object_or_404(Content, pk=pk)
     if request.method == "POST":
         form = ContentForm(request.POST, instance=post)
-        tag_form = TagForm(request.POST, instance=tag)
         if form.is_valid():
             post = form.save(commit=False)
-            post.author = request.user
             post.published_date = timezone.now
             post.save()
-            if tag_form.is_valid():
-                tag = tag_form.save()
-                post.tag_set.add(tag)
             return redirect('detail', pk=post.pk)
     else:
         form = ContentForm(instance=post)
-        tag_form = TagForm(instance=post.tag_set)
     return render(request, 'board/edit.html', {'form': form})
 
 def delete(request, pk):
@@ -74,3 +64,21 @@ def delete_comment(request, pk, comment_pk):
     comment = get_object_or_404(Comment,pk=comment_pk)
     comment.delete()
     return redirect('detail', pk=pk)
+
+def tag_add(request, pk):
+    post = get_object_or_404(Content, pk=pk)
+    tag_form = TagForm(request.POST)
+    if tag_form.is_valid():
+        tag = tag_form.save(commit=False)
+        tag, created = Tag.objects.get_or_create(name=tag.name)
+        post.tag_set.add(tag)
+        return redirect('detail',pk=pk)
+
+def tag_list(request):
+    tags = Tag.objects.all()
+    return render(request, 'board/tag.html', {'tags':tags})
+
+def tag_detail(request, pk):
+    tag = get_object_or_404(Tag, pk=pk)
+    tag_posts = Content.objects.filter(tag_set__in=[tag])
+    return render(request, 'board/tag_detail.html',{'tag':tag, 'tag_posts':tag_posts})
