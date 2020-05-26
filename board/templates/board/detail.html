@@ -8,8 +8,9 @@
     
     <h1>{{ post.title }}</h1>
     <p> {{ post.body|linebreaks }}</p>
+
     <p> {% for t in post.tag_set.all %}
-            #{{t.name}}
+            #{{t.name}} <a href="{% url 'tag_delete' pk=post.pk tag_pk=t.pk %}">X</a> 
         {%endfor%}
     </p>
 </div>

@@ -80,5 +80,14 @@ def tag_list(request):
 
 def tag_detail(request, pk):
     tag = get_object_or_404(Tag, pk=pk)
-    tag_posts = Content.objects.filter(tag_set__in=[tag])
+    tag_posts = tag.content_set.all() #Content.objects.filter(tag_set__in=[tag])
     return render(request, 'board/tag_detail.html',{'tag':tag, 'tag_posts':tag_posts})
+
+def tag_delete(request, pk, tag_pk):
+    post = get_object_or_404(Content, pk=pk)
+    tag = get_object_or_404(Tag, pk=tag_pk)
+    post.tag_set.remove(tag)
+    if tag.content_set.count()==0:
+        tag.delete()
+    return redirect('detail', pk=pk)
+

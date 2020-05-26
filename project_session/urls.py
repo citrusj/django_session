@@ -30,6 +30,7 @@ urlpatterns = [
     path('tagadd/<int:pk>', board.views.tag_add, name="tag_add"),
     path('tag', board.views.tag_list, name="tag_home"),
     path('hashtag/<int:pk>', board.views.tag_detail, name="tag_detail"),
+    path('tagdel/<int:pk>/tag/<int:tag_pk>/', board.views.tag_delete, name="tag_delete"),
     
     path('registration/register/', accounts.views.register, name="register"),
     path('registration/',include('django.contrib.auth.urls')),
